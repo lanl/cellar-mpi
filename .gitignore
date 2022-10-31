@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Prerequisites
 *.d
 
@@ -30,3 +31,8 @@
 *.exe
 *.out
 *.app
+=======
+*build*/
+.vscode/
+*-setup.py
+>>>>>>> bc0ed1e (initial commit)
