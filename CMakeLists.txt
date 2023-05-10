@@ -8,11 +8,6 @@ option(
     "Should be disabled for scenarios where unit tests will not be run" ON
     )
 
-# Dependencies
-find_package(MPI 2.0 REQUIRED COMPONENTS CXX)
-find_package(span-lite 0.5 REQUIRED)
-find_package(optional-lite 3.2 REQUIRED)
-
 # Dev Dependencies
 find_package(Doxygen)
 
@@ -25,7 +20,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 
 target_link_libraries(
     ${PROJECT_NAME}
-    INTERFACE MPI::MPI_CXX nonstd::span-lite nonstd::optional-lite)
+    INTERFACE MPI::MPI_C)
 
 include(cmake/install.cmake)
 

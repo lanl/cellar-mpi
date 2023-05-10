@@ -17,9 +17,8 @@
 #include <limits>
 #include <type_traits>
 #include <vector>
-
-#include <nonstd/optional.hpp>
-#include <nonstd/span.hpp>
+#include <optional>
+#include <span>
 
 #include "attrs.hpp"
 #include "buffer.hpp"
@@ -194,7 +193,7 @@ class CommImpl : public trait::Deref<ConcreteType, Comm>,
         return *ub;
     }
 
-    void gather(rank_t root, DynBuffer send, nonstd::optional<DynBuffer> recv = nonstd::nullopt) {
+    void gather(rank_t root, DynBuffer send, std::optional<DynBuffer> recv = std::nullopt) {
         if (root == rank()) {
             if (!recv) {
                 std::cerr << rank()
@@ -225,20 +224,20 @@ class CommImpl : public trait::Deref<ConcreteType, Comm>,
 
     template <typename T, typename = std::enable_if_t<is_datatype_v<T>>>
     void gather(rank_t root,
-                nonstd::span<T const> send,
-                nonstd::optional<nonstd::span<T>> recv = nonstd::nullopt) {
-        nonstd::optional<DynBuffer> recv_buf =
-            recv ? DynBuffer(MakeBuffer(*recv)) : nonstd::nullopt;
+                std::span<T const> send,
+                std::optional<std::span<T>> recv = std::nullopt) {
+        std::optional<DynBuffer> recv_buf =
+            recv ? DynBuffer(MakeBuffer(*recv)) : std::nullopt;
         gather(root, DynBuffer(MakeBuffer(send)), recv_buf);
     }
 
     template <typename T, typename = std::enable_if_t<is_datatype_v<T>>>
     void gather(rank_t root, T const &send) {
-        gather(root, nonstd::span<T const>(&send, 1));
+        gather(root, std::span<T const>(&send, 1));
     }
 
     template <typename T, typename = std::enable_if_t<is_datatype_v<T>>>
-    void gather_into_root(rank_t root, nonstd::span<T const> send, nonstd::span<T> recv) {
+    void gather_into_root(rank_t root, std::span<T const> send, std::span<T> recv) {
         if (root != rank()) {
             std::cerr
                 << rank() << ": Comm::gather_into_root called from a rank other than the root ("
@@ -253,8 +252,8 @@ class CommImpl : public trait::Deref<ConcreteType, Comm>,
     }
 
     template <typename T, typename = std::enable_if_t<is_datatype_v<T>>>
-    void gather_into_root(rank_t root, T const &send, nonstd::span<T> recv) {
-        gather_into_root(root, nonstd::span<T const>(&send, 1), recv);
+    void gather_into_root(rank_t root, T const &send, std::span<T> recv) {
+        gather_into_root(root, std::span<T const>(&send, 1), recv);
     }
 
     template <typename T, typename = std::enable_if_t<is_datatype_v<T>>>
@@ -265,7 +264,7 @@ class CommImpl : public trait::Deref<ConcreteType, Comm>,
     }
 
     template <typename T, typename = std::enable_if_t<is_datatype_v<T>>>
-    std::vector<T> gather_into_root(rank_t root, nonstd::span<T const> send) {
+    std::vector<T> gather_into_root(rank_t root, std::span<T const> send) {
         std::vector<T> recv(send.size() * size());
         gather_into_root(root, send, recv);
         return recv;
@@ -274,12 +273,12 @@ class CommImpl : public trait::Deref<ConcreteType, Comm>,
     template <typename T, typename = std::enable_if_t<is_datatype_v<T>>>
     std::vector<T> all_gather(T const &send) {
         std::vector<T> results(size());
-        all_gather(send, nonstd::span<T>(results));
+        all_gather(send, std::span<T>(results));
         return results;
     }
 
     template <typename T, typename = std::enable_if_t<is_datatype_v<T>>>
-    void all_gather(T const &send, nonstd::span<T> recv) {
+    void all_gather(T const &send, std::span<T> recv) {
         if (recv.size() < size()) {
             std::cerr << rank() << ": The recv buffer, of size " << recv.size()
                       << ", was smaller than the Comm::size() of " << size() << std::endl;

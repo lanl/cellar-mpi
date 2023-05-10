@@ -13,9 +13,7 @@
 // STL includes
 #include <type_traits>
 #include <vector>
-
-// Third party includes
-#include <nonstd/span.hpp>
+#include <span>
 
 // Internal includes
 #include "datatype.hpp"
@@ -27,7 +25,7 @@ class Buffer {
     using value_type = T;
     using mutable_value_type = std::remove_const_t<value_type>;
 
-    explicit Buffer(nonstd::span<T> data) : data_(data) {}
+    explicit Buffer(std::span<T> data) : data_(data) {}
 
     MPI_Datatype datatype() const {
         return mpi::DatatypeTraits<mutable_value_type>::mpi_datatype();
@@ -45,17 +43,17 @@ class Buffer {
     }
 
   private:
-    nonstd::span<T> data_;
+    std::span<T> data_;
 };
 
 template <typename T>
 Buffer<T> MakeBuffer(T &data) {
-    return Buffer<T>(nonstd::span<T>(&data, 1));
+    return Buffer<T>(std::span<T>(&data, 1));
 }
 
 template <typename T>
 Buffer<T const> MakeBuffer(T const &data) {
-    return Buffer<T const>(nonstd::span<T const>(&data, 1));
+    return Buffer<T const>(std::span<T const>(&data, 1));
 }
 
 template <typename T>
@@ -66,7 +64,7 @@ Buffer<T> MakeBuffer(Buffer<T> data) {
 }
 
 template <typename T>
-Buffer<T> MakeBuffer(nonstd::span<T> data) {
+Buffer<T> MakeBuffer(std::span<T> data) {
     static_assert(is_datatype_v<std::remove_const_t<T>>,
                   "T does not implement mpi::DatatypeTraits");
     return Buffer<T>(data);
@@ -76,14 +74,14 @@ template <typename T>
 Buffer<T> MakeBuffer(std::vector<T> &data) {
     static_assert(is_datatype_v<std::remove_const_t<T>>,
                   "T does not implement mpi::DatatypeTraits");
-    return Buffer<T>(nonstd::span<T>(data));
+    return Buffer<T>(std::span<T>(data));
 }
 
 template <typename T>
 Buffer<T const> MakeBuffer(std::vector<T> const &data) {
     static_assert(is_datatype_v<std::remove_const_t<T>>,
                   "T does not implement mpi::DatatypeTraits");
-    return Buffer<T const>(nonstd::span<T const>(data));
+    return Buffer<T const>(std::span<T const>(data));
 }
 
 class DynBuffer {

@@ -1,8 +1,6 @@
 @PACKAGE_INIT@
 
-find_package(MPI 3.0 REQUIRED COMPONENTS CXX)
-find_package(span-lite 0.5 REQUIRED)
-find_package(optional-lite 3.2 REQUIRED)
+find_package(MPI 3.0 REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/mpi-cppTargets.cmake")
 check_required_components("@PROJECT_NAME@")

@@ -13,7 +13,7 @@
 #include "mpi_stub_out.h"
 
 #include <cstddef>
-#include <nonstd/span.hpp>
+#include <span>
 
 #include "datatype.hpp"
 #include "exception.hpp"
@@ -50,11 +50,11 @@ class GroupImpl : public trait::Deref<ConcreteType, Group> {
   public:
     MPI_Group group() const { return static_cast<ConcreteType const *>(this)->get_raw(); }
 
-    UniqueGroup range_incl(nonstd::span<GroupRange> ranges) const;
+    UniqueGroup range_incl(std::span<GroupRange> ranges) const;
     UniqueGroup range_incl(GroupRange &range) const;
     UniqueGroup range_incl(rank_t from, rank_t to) const;
 
-    UniqueGroup range_excl(nonstd::span<GroupRange> ranges) const;
+    UniqueGroup range_excl(std::span<GroupRange> ranges) const;
     UniqueGroup range_excl(GroupRange &range) const;
     UniqueGroup range_excl(rank_t from, rank_t to) const;
 
@@ -102,7 +102,7 @@ static_assert(sizeof(UniqueGroup) == sizeof(MPI_Group),
               "UniqueGroup is expected to be the same size as MPI_Group");
 
 template <typename ConcreteType>
-UniqueGroup internal::GroupImpl<ConcreteType>::range_incl(nonstd::span<GroupRange> ranges) const {
+UniqueGroup internal::GroupImpl<ConcreteType>::range_incl(std::span<GroupRange> ranges) const {
     if (ranges.size() > std::numeric_limits<int>::max()) {
         throw std::out_of_range("ranges array is too large");
     }
@@ -117,7 +117,7 @@ UniqueGroup internal::GroupImpl<ConcreteType>::range_incl(nonstd::span<GroupRang
 
 template <typename ConcreteType>
 UniqueGroup internal::GroupImpl<ConcreteType>::range_incl(GroupRange &range) const {
-    return range_incl(nonstd::span<GroupRange>(&range, 1));
+    return range_incl(std::span<GroupRange>(&range, 1));
 }
 
 template <typename ConcreteType>
@@ -127,7 +127,7 @@ UniqueGroup internal::GroupImpl<ConcreteType>::range_incl(rank_t from, rank_t to
 }
 
 template <typename ConcreteType>
-UniqueGroup internal::GroupImpl<ConcreteType>::range_excl(nonstd::span<GroupRange> ranges) const {
+UniqueGroup internal::GroupImpl<ConcreteType>::range_excl(std::span<GroupRange> ranges) const {
     if (ranges.size() > std::numeric_limits<int>::max()) {
         throw std::out_of_range("ranges array is too large");
     }
@@ -142,7 +142,7 @@ UniqueGroup internal::GroupImpl<ConcreteType>::range_excl(nonstd::span<GroupRang
 
 template <typename ConcreteType>
 UniqueGroup internal::GroupImpl<ConcreteType>::range_excl(GroupRange &range) const {
-    return range_excl(nonstd::span<GroupRange>(&range, 1));
+    return range_excl(std::span<GroupRange>(&range, 1));
 }
 
 template <typename ConcreteType>

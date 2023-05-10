@@ -15,9 +15,8 @@
 #include <chrono>
 #include <cstdint>
 #include <vector>
-
-#include <nonstd/optional.hpp>
-#include <nonstd/span.hpp>
+#include <optional>
+#include <span>
 
 #include "clock.hpp"
 #include "comm.hpp"
@@ -95,7 +94,7 @@ inline bool finalized() {
  *
  * @throws Exception
  */
-inline int wait_any(nonstd::span<UniqueRequest> requests, Status &status) {
+inline int wait_any(std::span<UniqueRequest> requests, Status &status) {
     if (requests.size() > std::numeric_limits<int>::max()) {
         throw std::out_of_range("requests array is too large");
     }
@@ -120,7 +119,7 @@ inline int wait_any(nonstd::span<UniqueRequest> requests, Status &status) {
  *
  * @throws Exception
  */
-inline int wait_any(nonstd::span<UniqueRequest> requests) {
+inline int wait_any(std::span<UniqueRequest> requests) {
     if (requests.size() > std::numeric_limits<int>::max()) {
         throw std::out_of_range("requests array is too large");
     }
@@ -144,7 +143,7 @@ inline int wait_any(nonstd::span<UniqueRequest> requests) {
  *
  * @throws Exception
  */
-inline void wait_all(nonstd::span<UniqueRequest> requests, nonstd::span<Status> statuses) {
+inline void wait_all(std::span<UniqueRequest> requests, std::span<Status> statuses) {
     if (requests.size() > std::numeric_limits<int>::max()) {
         throw std::out_of_range("requests array is too large");
     }
@@ -166,7 +165,7 @@ inline void wait_all(nonstd::span<UniqueRequest> requests, nonstd::span<Status> 
  *
  * @throws Exception
  */
-inline void wait_all(nonstd::span<UniqueRequest> requests) {
+inline void wait_all(std::span<UniqueRequest> requests) {
     if (requests.size() > std::numeric_limits<int>::max()) {
         throw std::out_of_range("requests array is too large");
     }
@@ -185,7 +184,7 @@ inline void wait_all(nonstd::span<UniqueRequest> requests) {
  *
  * @throws Exception
  */
-inline std::vector<Status> wait_all_statuses(nonstd::span<UniqueRequest> requests) {
+inline std::vector<Status> wait_all_statuses(std::span<UniqueRequest> requests) {
     std::vector<mpi::Status> statuses(requests.size());
     wait_all(requests, statuses);
     return statuses;
@@ -201,9 +200,9 @@ inline std::vector<Status> wait_all_statuses(nonstd::span<UniqueRequest> request
  *
  * @throws Exception
  */
-inline int wait_some(nonstd::span<UniqueRequest> requests,
-                     nonstd::span<int> indices,
-                     nonstd::optional<nonstd::span<Status>> statuses = nonstd::nullopt) {
+inline int wait_some(std::span<UniqueRequest> requests,
+                     std::span<int> indices,
+                     std::optional<std::span<Status>> statuses = std::nullopt) {
     if (requests.size() > std::numeric_limits<int>::max()) {
         throw std::out_of_range("requests array is too large");
     }
@@ -247,7 +246,7 @@ inline int wait_some(nonstd::span<UniqueRequest> requests,
  *
  * @throws Exception
  */
-inline void wait_some_into(nonstd::span<UniqueRequest> requests, std::vector<int> &indices) {
+inline void wait_some_into(std::span<UniqueRequest> requests, std::vector<int> &indices) {
     auto const original_indices_size = indices.size();
     // indices must be large enough to contain the completed indices for every Request in requests.
     // Even if some of the requests in the array have been completed, OpenMPI assumes that indices
@@ -255,7 +254,7 @@ inline void wait_some_into(nonstd::span<UniqueRequest> requests, std::vector<int
     indices.resize(original_indices_size + requests.size());
 
     auto const num_completed =
-        wait_some(requests, nonstd::span<int>{indices}.subspan(original_indices_size));
+        wait_some(requests, std::span<int>{indices}.subspan(original_indices_size));
 
     indices.resize(original_indices_size + num_completed);
 }
